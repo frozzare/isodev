@@ -33,4 +33,5 @@ Vagrant.configure('2') do |config|
 
   config.vm.provision :shell, :path => '.isodev/bootstrap.sh'
 
+  config.vm.synced_folder '.', '/vagrant', :nfs => true
 end
