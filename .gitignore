@@ -1,0 +1,3 @@
+.vagrant
+.isodev/composer.phar
+*.box

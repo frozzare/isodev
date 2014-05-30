@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Isodev Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+  <link href="http://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.1/normalize.min.css" rel="stylesheet" type="text/css" />
+  <link href="http://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+  <style type="text/css">
+    body {
+      font-family: 'Open Sans', sans-serif;
+    }
+    header {
+      width: 100%;
+      height: 12rem;
+      background: #3CB4E5;
+      color: #FFF;
+      display: -webkit-flex;
+      -webkit-flex-direction: row;
+      -webkit-justify-content: center;
+      -webkit-align-items: center;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+    }
+    header h1 {
+      text-align: center;
+    }
+    main {
+      width: 500px;
+      margin: 0 auto;
+    }
+    ul.nav li {
+      padding: 10px;
+      list-style: none;
+    }
+    ul.nav li:nth-child(odd) {
+      background: #f2f2f2;
+    }
+    a {
+      color: #333;
+      font-size: 22px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Isodev Dashboard</h1>
+  </header>
+  <main>
+    <h2>Tools</h2>
+    <ul class="nav">
+      <li><a href="phpmyadmin/">phpMyAdmin</a></li>
+      <li><a href="phpmemcachedadmin/">phpMemcachedAdmin</a></li>
+      <li><a href="opcache-status/opcache.php">Opcache Status</a></li>
+      <li><a href="beanstalk-console">Beanstalk Console</a></li>
+      <li><a href="webgrind/">Webgrind</a></li>
+      <li><a href="phpinfo/">PHP Info</a></li>
+    </ul>
+</body>
+</html>
