@@ -234,10 +234,10 @@ isodevdashboardsite="<VirtualHost *:80>
      ServerName iso.dev
      DocumentRoot /usr/share/isodevdashboard
      <Directory /usr/share/isodevdashboard>
-          Order allow,deny
-          Allow from all
-          Require all granted
-          AllowOverride All
+       Options Indexes FollowSymLinks Includes ExecCGI
+       AllowOverride All
+       Order deny,allow
+       Allow from all
     </Directory>
 </VirtualHost>"
 echo "${isodevdashboardsite}" >> /etc/apache2/sites-enabled/isodevdashboard.conf
@@ -245,15 +245,19 @@ rm -r /etc/apache2/sites-enabled/000-default.conf
 service apache2 restart
 
 # Installing other sites
+rm -r /var/www
+ln -s /vagrant/ /var/www
+chgrp www-data /var/www
+chmod 2750 /var/www
 echo "Installing other sites"
 allothersites="<VirtualHost *:80>
      ServerName rest.isodev
-     DocumentRoot /vagrant/web
-     <Directory /vagrant/web>
-          Order allow,deny
-          Allow from all
-          Require all granted
-          AllowOverride All
+     DocumentRoot /var/www/web
+     <Directory /var/www/web>
+       Options Indexes FollowSymLinks Includes ExecCGI
+       AllowOverride All
+       Order deny,allow
+       Allow from all
     </Directory>
 </VirtualHost>"
 echo "${allothersites}" >> /etc/apache2/sites-enabled/allothersites.conf
