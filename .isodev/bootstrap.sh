@@ -152,8 +152,9 @@ echo "Installing phpMyAdmin"
 mkdir /usr/share/phpmyadmin
 mkdir /etc/phpmyadmin
 wget -q -O phpmyadmin.tar.gz 'http://sourceforge.net/projects/phpmyadmin/files/phpMyAdmin/4.2.2/phpMyAdmin-4.2.2-all-languages.tar.gz/download'
-tar -xf phpmyadmin.tar.gz -C /usr/share/phpmyadmin/
-rm -r phpmyadmin.tar.gz
+tar -xf phpmyadmin.tar.gz
+mv phpMyAdmin-4.2.2-all-languages/* /usr/share/phpmyadmin/
+rm -r phpmyadmin.tar.gz phpMyAdmin-4.2.2-all-languages
 phpmyadminalias="Alias /phpmyadmin /usr/share/phpmyadmin
 
 <Directory /usr/share/phpmyadmin>
