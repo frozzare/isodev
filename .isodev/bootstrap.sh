@@ -89,7 +89,7 @@ sed -i "s/#ServerRoot.*/ServerName isodev/" /etc/apache2/apache2.conf
 # Install xdebug
 pecl install xdebug
 echo "extension=xdebug.so" >> /etc/php5/apache2/php.ini
-echo "xdebug.profiler_enable = 1" >> /etc/php5/apache2/php.ini
+echo "xdebug.profiler_enable = 0" >> /etc/php5/apache2/php.ini
 
 # Enable error reporting
 sed -i "s/error_reporting = .*/error_reporting = E_ALL/" /etc/php5/apache2/php.ini
