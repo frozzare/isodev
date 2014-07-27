@@ -3,9 +3,6 @@ Vagrant machine for PHP development with HHVM installed. The operating system is
 
 ![Isodev Dashboard](http://public.forsmo.me/github/isodev.png)
 
-## Add custom domains
-In the directory `.isodev/hosts` can you specified which domains to use.
-
 ## Passwords
 Password for the virtual machines `root` user is `vagrant`. Password for MySQL `root` user is `root`.
 
