@@ -262,6 +262,7 @@ echo "Installing other sites"
 allothersites="<VirtualHost *:80>
      ServerName rest.isodev
      DocumentRoot /var/www
+     ProxyPassMatch ^/(.*\.php(/.*)?)$ fcgi://127.0.0.1:9000/var/www/$1
      <Directory /var/www>
        Options Indexes FollowSymLinks Includes ExecCGI
        AllowOverride All
@@ -276,6 +277,8 @@ service apache2 restart
 update-rc.d hhvm defaults
 /usr/share/hhvm/install_fastcgi.sh
 service hhvm restart
+sed -i "s/ProxyPassMatch/# ProxyPassMatch/" /etc/apache2/mods-enabled/hhvm_proxy_fcgi.conf
+service apache2 restart
 
 # Welcome message
 echo "  Welcome to Isodev!" >> /etc/motd
