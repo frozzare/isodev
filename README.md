@@ -31,8 +31,8 @@ Password for the virtual machines `root` user is `vagrant`. Password for MySQL `
 * memcached
 * dos2unix
 * libmcrypt4
-* apache2
-* php5
+* nginx
+* php5-fpm
 * php5-cli
 * php5-common
 * php5-dev

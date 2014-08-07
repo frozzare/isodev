@@ -1,19 +1,31 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-Vagrant.configure('2') do |config|
+# The hostname to use
+HOSTNAME = 'dev.isopress.com'
 
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = '2'
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  # Virtualbox configuration
   config.vm.provider :virtualbox do |v|
     v.customize ['modifyvm', :id, '--memory', 1024]
     v.customize ['modifyvm', :id, '--natdnshostresolver1', 'on']
     v.customize ['modifyvm', :id, '--natdnsproxy1', 'on']
   end
 
+  # Forward ssh agent
   config.ssh.forward_agent = true
+
+  # Set the box were using
   config.vm.box = 'ubuntu/trusty64'
+
+  # Set hostname
   config.vm.hostname = 'iso.dev'
 
-  # Add custom hosts.
+  # Add custom hosts
   if defined? VagrantPlugins::HostsUpdater
     hosts = []
     file = '.isodev/hosts'
@@ -29,9 +41,12 @@ Vagrant.configure('2') do |config|
     config.hostsupdater.aliases = hosts
   end
 
+  # Private network ip
   config.vm.network :private_network, ip: '192.168.66.6'
 
+  # Provision
   config.vm.provision :shell, :path => '.isodev/bootstrap.sh'
 
-  config.vm.synced_folder '.', '/vagrant', :nfs => true
+  # Set synced folder
+  config.vm.synced_folder '.', '/vagrant', :mount_options => [ 'dmode=777,fmode=777' ]
 end
