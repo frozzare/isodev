@@ -182,8 +182,7 @@ chgrp www-data /var/www
 chmod 2750 /var/www
 
 # Copying nginx files to nginx.
-rm -r /etc/nginx/sites-enabled
-ln -s /vagrant/.isodev/nginx/ /etc/nginx/sites-enabled
+cp -R /vagrant/.isodev/nginx/* /etc/nginx/sites-enabled
 
 # HHVM
 update-rc.d hhvm defaults
