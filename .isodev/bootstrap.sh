@@ -3,7 +3,7 @@
 # Isodev bootstrap
 #
 
-webroot="/vagrant/web"
+webroot="/vagrant/sites"
 
 # Add HHVM source
 wget -O - http://dl.hhvm.com/conf/hhvm.gpg.key | apt-key add -

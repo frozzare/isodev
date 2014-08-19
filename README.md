@@ -1,6 +1,8 @@
 # Isodev
 Vagrant machine for PHP development with HHVM installed. The operating system is Ubuntu 14.04. A custom dashboard is available at [http://iso.dev](http://iso.dev) with all tools and all other domains will go to web directory.
 
+Add the hostname as a directory in `sites` and it will use that for directory for the hostname. Have a look a `isotest.dev` directory.
+
 ![Isodev Dashboard](http://public.forsmo.me/github/isodev.png)
 
 ## Passwords

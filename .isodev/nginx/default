@@ -1,6 +1,6 @@
 server {
 	listen 80 default_server;
-	root /var/www;
+	root /var/www/$http_host;
 	index index.php index.html;
 	include hhvm.conf;
 
