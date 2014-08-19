@@ -1,9 +1,12 @@
 # Isodev
 Vagrant machine for PHP development with HHVM installed. The operating system is Ubuntu 14.04. A custom dashboard is available at [http://iso.dev](http://iso.dev) with all tools and all other domains will go to web directory.
 
-Add the hostname as a directory in `sites` and it will use that for directory for the hostname. Have a look a `isotest.dev` directory.
-
 ![Isodev Dashboard](http://public.forsmo.me/github/isodev.png)
+
+## Sites directory
+The directory name should be the hostname you are using. For example `isotest.dev` for `http://isotest.dev`.
+
+If `web` directory exists in your hostname directory then that directory is the web root directory. This can be turned of by edit [.isodev/nginx/default](https://github.com/frozzare/isodev/blob/master/.isodev/nginx/default)
 
 ## Passwords
 Password for the virtual machines `root` user is `vagrant`. Password for MySQL `root` user is `root`.

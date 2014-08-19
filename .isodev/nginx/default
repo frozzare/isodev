@@ -1,6 +1,13 @@
 server {
 	listen 80 default_server;
-	root /var/www/$http_host;
+	set $root_path /var/www/$http_host;
+
+	if (-d /var/www/$http_host/web) {
+		set $root_path /var/www/$http_host/web;
+	}
+
+	root $root_path;
+
 	index index.php index.html;
 	include hhvm.conf;
 
