@@ -31,7 +31,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     file = '.isodev/hosts'
 
     if File.exists?(file)
-      IO.read(file).split("\n").each do |host|
+      IO.read(file).split('\n').each do |host|
         if host[0..0] != '#'
           hosts << host
         end
@@ -48,5 +48,5 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision :shell, :path => '.isodev/bootstrap.sh'
 
   # Set synced folder
-  config.vm.synced_folder '.', '/vagrant', :nfs => true, :mount_options => ['nolock,vers=3,udp']
+  config.vm.synced_folder '.', '/vagrant', nfs: true
 end

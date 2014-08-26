@@ -1,9 +1,20 @@
 server {
 	listen 80 default_server;
-	set $root_path /var/www/$http_host;
 
-	if (-d /var/www/$http_host/web) {
-		set $root_path /var/www/$http_host/web;
+	if (-d /vagrant/sites/$http_host) {
+		set $root_path /vagrant/sites/$http_host;
+	}
+
+	if (-d /vagrant/sites/$http_host/web) {
+		set $root_path /vagrant/sites/$http_host/web;
+	}
+
+	if (-d /vagrant/$http_host) {
+		set $root_path /vagrant/$http_host;
+	}
+
+	if (-d /vagrant/$http_host/web) {
+		set $root_path /vagrant/$http_host/web;
 	}
 
 	root $root_path;

@@ -3,8 +3,6 @@
 # Isodev bootstrap
 #
 
-webroot="/vagrant/sites"
-
 # Add HHVM source
 wget -O - http://dl.hhvm.com/conf/hhvm.gpg.key | apt-key add -
 echo deb http://dl.hhvm.com/ubuntu trusty main | tee /etc/apt/sources.list.d/hhvm.list
@@ -70,6 +68,9 @@ packages_to_install=(
 
   # HHVM
   hhvm
+
+  # Locale
+  language-pack-sv
 )
 
 # Setup mysql. Sets database root password to root.
@@ -177,9 +178,8 @@ rm -r phpmemcachedadmin.tar.gz
 
 # Installing default sites
 rm -r /var/www
-ln -s $webroot /var/www
-chgrp www-data /var/www
-chmod 2750 /var/www
+chgrp www-data /vagrant
+chmod 2750 /vagrant
 
 # Copying nginx files to nginx.
 cp -R /vagrant/.isodev/nginx/* /etc/nginx/sites-enabled
