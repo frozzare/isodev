@@ -32,6 +32,7 @@ packages_to_install=(
   memcached
   dos2unix
   libmcrypt4
+  htop
 
   # Webserver
   nginx
