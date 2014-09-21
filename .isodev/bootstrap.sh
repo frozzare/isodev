@@ -3,10 +3,6 @@
 # Isodev bootstrap
 #
 
-# Add HHVM source
-wget -O - http://dl.hhvm.com/conf/hhvm.gpg.key | apt-key add -
-echo deb http://dl.hhvm.com/ubuntu trusty main | tee /etc/apt/sources.list.d/hhvm.list
-
 # Upgrade Base Packages
 echo "Updating packages..."
 apt-get update -y
@@ -33,6 +29,7 @@ packages_to_install=(
   dos2unix
   libmcrypt4
   htop
+  cachefilesd
 
   # Webserver
   nginx
@@ -66,9 +63,6 @@ packages_to_install=(
   g++
   npm
   nodejs
-
-  # HHVM
-  hhvm
 
   # Locale
   language-pack-sv
@@ -126,9 +120,8 @@ sed -i "s/#START=yes/START=yes/" /etc/default/beanstalkd
 echo "Linking /usr/bin/nodejs to /usr/bin/node"
 ln -s /usr/bin/nodejs /usr/bin/node
 
-# Install grunt
-echo "Installing grunt"
-npm install -g grunt-cli
+# Setup cachefilesd
+sudo echo "RUN=yes" > /etc/default/cachefilesd
 
 # Set start path
 cd /vagrant
@@ -177,20 +170,14 @@ wget -q -O phpmemcachedadmin.tar.gz http://phpmemcacheadmin.googlecode.com/files
 tar -xf phpmemcachedadmin.tar.gz -C /usr/share/isodev/phpmemcachedadmin
 rm -r phpmemcachedadmin.tar.gz
 
-# Installing default sites
-rm -r /var/www
 chgrp www-data /vagrant
 chmod 2750 /vagrant
 
 # Copying nginx files to nginx.
 cp -R /vagrant/.isodev/nginx/* /etc/nginx/sites-enabled
 
-# HHVM
-update-rc.d hhvm defaults
-/usr/share/hhvm/install_fastcgi.sh
-service hhvm restart
-service php5-fpm restart
 service nginx restart
+service php5-fpm restart
 
 # Welcome message
 echo "  Welcome to Isodev!" >> /etc/motd
