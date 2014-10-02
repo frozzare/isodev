@@ -5,10 +5,6 @@
 
 webroot="/vagrant/web"
 
-# Add HHVM source
-wget -O - http://dl.hhvm.com/conf/hhvm.gpg.key | apt-key add -
-echo deb http://dl.hhvm.com/ubuntu trusty main | tee /etc/apt/sources.list.d/hhvm.list
-
 # Upgrade Base Packages
 echo "Updating packages..."
 apt-get update -y
@@ -67,9 +63,6 @@ packages_to_install=(
   g++
   npm
   nodejs
-
-  # HHVM
-  hhvm
 )
 
 # Setup mysql. Sets database root password to root.
@@ -262,7 +255,6 @@ echo "Installing other sites"
 allothersites="<VirtualHost *:80>
      ServerName rest.isodev
      DocumentRoot /var/www
-     ProxyPassMatch ^/(.*\.php(/.*)?)$ fcgi://127.0.0.1:9000/var/www/$1
      <Directory /var/www>
        Options Indexes FollowSymLinks Includes ExecCGI
        AllowOverride All
@@ -273,12 +265,6 @@ allothersites="<VirtualHost *:80>
 echo "${allothersites}" >> /etc/apache2/sites-enabled/allothersites.conf
 service apache2 restart
 
-# HHVM
-update-rc.d hhvm defaults
-/usr/share/hhvm/install_fastcgi.sh
-service hhvm restart
-sed -i "s/ProxyPassMatch/# ProxyPassMatch/" /etc/apache2/mods-enabled/hhvm_proxy_fcgi.conf
-service apache2 restart
 
 # Welcome message
 echo "  Welcome to Isodev!" >> /etc/motd
