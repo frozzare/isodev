@@ -3,8 +3,6 @@
 # Isodev bootstrap
 #
 
-webroot="/vagrant/web"
-
 # Upgrade Base Packages
 echo "Updating packages..."
 apt-get update -y
@@ -30,12 +28,18 @@ packages_to_install=(
   memcached
   dos2unix
   libmcrypt4
+  htop
+  cachefilesd
 
   # Webserver
-  apache2
+  nginx
+
+  # Databases
+  mariadb-server
+  redis-server
 
   # PHP packages
-  php5
+  php5-fpm
   php5-cli
   php5-common
   php5-dev
@@ -52,10 +56,6 @@ packages_to_install=(
   php5-mysql
   php5-memcached
 
-  # Databases
-  mysql-server
-  redis-server
-
   # Queue
   beanstalkd
 
@@ -63,7 +63,16 @@ packages_to_install=(
   g++
   npm
   nodejs
+
+  # Locale
+  language-pack-sv
 )
+
+# Add MariaDB source
+apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xcbcb082a1bb943db
+echo "deb http://ftp.ddg.lth.se/mariadb/repo/10.0/ubuntu trusty main" >> /etc/apt/sources.list.d/mariadb.list
+echo "deb-src http://ftp.ddg.lth.se/mariadb/repo/10.0/ubuntu trusty main" >> /etc/apt/sources.list.d/mariadb.list
+apt-get update -y
 
 # Setup mysql. Sets database root password to root.
 echo "MySQL setup"
@@ -84,20 +93,16 @@ done
 # Clean apt-get cache
 apt-get clean
 
-# Set apache2 server name
-sed -i "s/#ServerRoot.*/ServerName isodev/" /etc/apache2/apache2.conf
-/etc/init.d/apache2 restart
-
 # Install xdebug
 pecl install xdebug
-echo "extension=xdebug.so" >> /etc/php5/apache2/php.ini
-echo "xdebug.profiler_enable = 0" >> /etc/php5/apache2/php.ini
+echo "extension=xdebug.so" >> /etc/php5/fpm/php.ini
+echo "xdebug.profiler_enable = 0" >> /etc/php5/fpm/php.ini
 
 # Enable error reporting
-sed -i "s/error_reporting = .*/error_reporting = E_ALL/" /etc/php5/apache2/php.ini
-sed -i "s/display_errors = .*/display_errors = On/" /etc/php5/apache2/php.ini
-sed -i "s/error_reporting = .*/error_reporting = E_ALL/" /etc/php5/cli/php.ini
-sed -i "s/display_errors = .*/display_errors = On/" /etc/php5/cli/php.ini
+sed -i "s/error_reporting = .*/error_reporting = E_ALL/" /etc/php5/fpm/php.ini
+sed -i "s/display_errors = .*/display_errors = On/" /etc/php5/fpm/php.ini
+sed -i "s/error_reporting = .*/error_reporting = E_ALL/" /etc/php5/fpm/php.ini
+sed -i "s/display_errors = .*/display_errors = On/" /etc/php5/fpm/php.ini
 
 # Memory limit
 sed -i "s/memory_limit = .*/memory_limit = 512M/" /etc/php5/cli/php.ini
@@ -121,150 +126,64 @@ sed -i "s/#START=yes/START=yes/" /etc/default/beanstalkd
 echo "Linking /usr/bin/nodejs to /usr/bin/node"
 ln -s /usr/bin/nodejs /usr/bin/node
 
-# Install grunt
-echo "Installing grunt"
-npm install -g grunt-cli
+# Setup cachefilesd
+sudo echo "RUN=yes" > /etc/default/cachefilesd
 
 # Set start path
 cd /vagrant
 echo cd \/vagrant > /home/vagrant/.bashrc
 rm -rf /etc/motd
 
-# Enable rewrite
-a2enmod rewrite
+# Install Isorock Dashboard
+echo "Installing Isorock Dashboard"
+mkdir -p /usr/share/isodev/
+cp /vagrant/.isodev/default_site/index.html /usr/share/isodev/
 
 # /phpinfo/
-echo "Creating phpinfo file"
-mkdir /usr/share/phpinfo
-mkdir /etc/phpinfo
-phpinfoalias="Alias /phpinfo /usr/share/phpinfo
-
-<Directory /usr/share/phpmyadmin>
-  Options Indexes FollowSymLinks
-  DirectoryIndex index.php
-</Directory>"
-
-echo "<?php phpinfo(); ?>" >> /usr/share/phpinfo/index.php
-echo "${phpinfoalias}" >> /etc/phpinfo/apache2.conf
-ln -s /etc/phpinfo/apache2.conf /etc/apache2/conf-enabled/phpinfo.conf
-service apache2 restart
+echo "Installing phpinfo file"
+mkdir -p /usr/share/isodev/phpinfo
+echo "<?php phpinfo(); ?>" >> /usr/share/isodev/phpinfo/index.php
 
 # Install phpmyadmin
 echo "Installing phpMyAdmin"
-mkdir /usr/share/phpmyadmin
-mkdir /etc/phpmyadmin
-wget -q -O phpmyadmin.tar.gz 'http://sourceforge.net/projects/phpmyadmin/files/phpMyAdmin/4.2.2/phpMyAdmin-4.2.2-all-languages.tar.gz/download'
+mkdir -p /usr/share/isodev/phpmyadmin
+wget -q -O phpmyadmin.tar.gz 'http://sourceforge.net/projects/phpmyadmin/files/phpMyAdmin/4.2.10.1/phpMyAdmin-4.2.10.1-all-languages.tar.gz/download'
 tar -xf phpmyadmin.tar.gz
-mv phpMyAdmin-4.2.2-all-languages/* /usr/share/phpmyadmin/
-rm -r phpmyadmin.tar.gz phpMyAdmin-4.2.2-all-languages
-phpmyadminalias="Alias /phpmyadmin /usr/share/phpmyadmin
-
-<Directory /usr/share/phpmyadmin>
-  Options Indexes FollowSymLinks
-  DirectoryIndex index.php
-</Directory>"
-echo "${phpmyadminalias}" >> /etc/phpmyadmin/apache2.conf
-ln -s /etc/phpmyadmin/apache2.conf /etc/apache2/conf-enabled/phpmyadmin.conf
-service apache2 restart
+mv phpMyAdmin-4.2.2-all-languages/* /usr/share/isodev/phpmyadmin
+rm -r phpMyAdmin-4.2.2-all-languages phpmyadmin.tar.gz
 
 # Install beanstalk console
 echo "Installing Beanstalk Console"
-git clone https://github.com/ptrofimov/beanstalk_console.git /usr/share/phpbeanstalk_console
-mkdir /etc/phpbeanstalk_console
-beanstalk_consolealias="Alias /beanstalk-console /usr/share/phpbeanstalk_console/public
-
-<Directory /usr/share/phpbeanstalk_console/public>
-  Options Indexes FollowSymLinks
-  DirectoryIndex index.php
-</Directory>"
-echo "${beanstalk_consolealias}" >> /etc/phpbeanstalk_console/apache2.conf
-ln -s /etc/phpbeanstalk_console/apache2.conf /etc/apache2/conf-enabled/beanstalk_console.conf
-chmod u+w /usr/share/phpbeanstalk_console/storage.json
-chown www-data:www-data /usr/share/phpbeanstalk_console/storage.json
-service apache2 restart
+mkdir -p /usr/share/isodev/beanstalk-console
+git clone https://github.com/ptrofimov/beanstalk_console.git /usr/share/isodev/beanstalk-console
+chmod u+w /usr/share/isodev/beanstalk-console/storage.json
+chown www-data:www-data /usr/share/isodev/beanstalk-console/storage.json
 
 # Install webgrid
 echo "Installing Webgrind"
-mkdir /etc/phpwebgrind
-git clone https://github.com/jokkedk/webgrind.git /usr/share/phpwebgrind/
-phpwebgrindalias="Alias /webgrind /usr/share/phpwebgrind
-
-<Directory /usr/share/phpwebgrind>
-  Options Indexes FollowSymLinks
-  DirectoryIndex index.php
-</Directory>"
-echo "${phpwebgrindalias}" >> /etc/phpwebgrind/apache2.conf
-ln -s /etc/phpwebgrind/apache2.conf /etc/apache2/conf-enabled/phpwebgrind.conf
-service apache2 restart
+mkdir -p /usr/share/isodev/webgrind
+git clone https://github.com/jokkedk/webgrind.git /usr/share/isodev/webgrind
 
 # Install opcache-status
 echo "Installing Opcache Status"
-mkdir /etc/phpopcache-status
-git clone https://github.com/rlerdorf/opcache-status.git /usr/share/phpopcache-status/
-phpwebgrindalias="Alias /opcache-status /usr/share/phpopcache-status
-
-<Directory /usr/share/phpopcache-status>
-  Options Indexes FollowSymLinks
-  DirectoryIndex index.php
-</Directory>"
-echo "${phpwebgrindalias}" >> /etc/phpopcache-status/apache2.conf
-ln -s /etc/phpopcache-status/apache2.conf /etc/apache2/conf-enabled/phpopcache-status.conf
-service apache2 restart
+mkdir -p /usr/share/isodev/opcache-status
+git clone https://github.com/rlerdorf/opcache-status.git /usr/share/isodev/opcache-status
 
 # Install phpmemcachedadmin
 echo "Installing phpMemcachedAdmin"
-mkdir /usr/share/phpmemcachedadmin
-mkdir /etc/phpmemcachedadmin
+mkdir -p /usr/share/isodev/phpmemcachedadmin
 wget -q -O phpmemcachedadmin.tar.gz http://phpmemcacheadmin.googlecode.com/files/phpMemcachedAdmin-1.2.2-r262.tar.gz
-tar -xf phpmemcachedadmin.tar.gz -C /usr/share/phpmemcachedadmin
+tar -xf phpmemcachedadmin.tar.gz -C /usr/share/isodev/phpmemcachedadmin
 rm -r phpmemcachedadmin.tar.gz
-phpmemcachedadminalias="Alias /phpmemcachedadmin /usr/share/phpmemcachedadmin
 
-<Directory /usr/share/phpmemcachedadmin>
-  Options Indexes FollowSymLinks
-  DirectoryIndex index.php
-</Directory>"
-echo "${phpmemcachedadminalias}" >> /etc/phpmemcachedadmin/apache2.conf
-ln -s /etc/phpmemcachedadmin/apache2.conf /etc/apache2/conf-enabled/phpmemcachedadmin.conf
-service apache2 restart
+chgrp www-data /vagrant
+chmod 2750 /vagrant
 
-# Install Isorock Dashboard
-echo "Installing Isorock Dashboard"
-mkdir /usr/share/isodevdashboard
-cp /vagrant/.isodev/default_site/index.html /usr/share/isodevdashboard
-isodevdashboardsite="<VirtualHost *:80>
-     ServerName iso.dev
-     DocumentRoot /usr/share/isodevdashboard
-     <Directory /usr/share/isodevdashboard>
-       Options Indexes FollowSymLinks Includes ExecCGI
-       AllowOverride All
-       Order deny,allow
-       Allow from all
-    </Directory>
-</VirtualHost>"
-echo "${isodevdashboardsite}" >> /etc/apache2/sites-enabled/isodevdashboard.conf
-rm -r /etc/apache2/sites-enabled/000-default.conf
-service apache2 restart
+# Copying nginx files to nginx.
+cp -R /vagrant/.isodev/nginx/* /etc/nginx/sites-enabled
 
-# Installing other sites
-rm -r /var/www
-ln -s $webroot /var/www
-chgrp www-data /var/www
-chmod 2750 /var/www
-echo "Installing other sites"
-allothersites="<VirtualHost *:80>
-     ServerName rest.isodev
-     DocumentRoot /var/www
-     <Directory /var/www>
-       Options Indexes FollowSymLinks Includes ExecCGI
-       AllowOverride All
-       Order deny,allow
-       Allow from all
-    </Directory>
-</VirtualHost>"
-echo "${allothersites}" >> /etc/apache2/sites-enabled/allothersites.conf
-service apache2 restart
-
+service nginx restart
+service php5-fpm restart
 
 # Welcome message
 echo "  Welcome to Isodev!" >> /etc/motd
