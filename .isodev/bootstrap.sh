@@ -53,7 +53,7 @@ packages_to_install=(
   php5-apcu
   php5-json
   php5-sqlite
-  php5-mysql
+  php5-mysqlnd
   php5-memcached
 
   # Queue
