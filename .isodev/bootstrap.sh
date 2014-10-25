@@ -93,6 +93,9 @@ done
 # Clean apt-get cache
 apt-get clean
 
+# Bind address Mariadb
+sed -i "s/bind-address.*/bind-address = 0.0.0.0/" /etc/mysql/my.cnf
+
 # Install xdebug
 pecl install xdebug
 echo "extension=xdebug.so" >> /etc/php5/fpm/php.ini
@@ -192,6 +195,7 @@ chmod 2750 /vagrant
 # Copying nginx files to nginx.
 cp -R /vagrant/.isodev/nginx/* /etc/nginx/sites-enabled
 
+service mysql restart
 service nginx restart
 service php5-fpm restart
 
