@@ -64,6 +64,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Provision
   config.vm.provision :shell, :path => '.isodev/bootstrap.sh'
 
+  # Forward MySQL port
+  config.vm.forward_port 3306, 3306
+
   # Set synced folder
   config.vm.synced_folder '.', '/vagrant', :nfs => { :mount_options => ['dmode=777','fmode=777','vers=3', 'tcp', 'fsc'] }
 end
