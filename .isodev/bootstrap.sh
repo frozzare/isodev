@@ -93,13 +93,13 @@ done
 # Clean apt-get cache
 apt-get clean
 
+# Bind address Mariadb
+sed -i "s/bind-address.*/bind-address = 0.0.0.0/" /etc/mysql/my.cnf
+
 # Install xdebug
 pecl install xdebug
 echo "extension=xdebug.so" >> /etc/php5/fpm/php.ini
 echo "xdebug.profiler_enable = 0" >> /etc/php5/fpm/php.ini
-
-# Bind address Mariadb
-sed -i "s/bind-address.*/bind-address = 0.0.0.0/" /etc/mysql/my.cnf
 
 # Enable error reporting
 sed -i "s/error_reporting = .*/error_reporting = E_ALL/" /etc/php5/fpm/php.ini
