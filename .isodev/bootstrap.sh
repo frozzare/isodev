@@ -149,8 +149,8 @@ echo "Installing phpMyAdmin"
 mkdir -p /usr/share/isodev/phpmyadmin
 wget -q -O phpmyadmin.tar.gz 'http://sourceforge.net/projects/phpmyadmin/files/phpMyAdmin/4.2.10.1/phpMyAdmin-4.2.10.1-all-languages.tar.gz/download'
 tar -xf phpmyadmin.tar.gz
-mv phpMyAdmin-4.2.2-all-languages/* /usr/share/isodev/phpmyadmin
-rm -r phpMyAdmin-4.2.2-all-languages phpmyadmin.tar.gz
+mv phpMyAdmin-4.2.10.1-all-languages/* /usr/share/isodev/phpmyadmin
+rm -r phpMyAdmin-4.2.10.1-all-languages phpmyadmin.tar.gz
 
 # Install beanstalk console
 echo "Installing Beanstalk Console"
@@ -175,6 +175,16 @@ mkdir -p /usr/share/isodev/phpmemcachedadmin
 wget -q -O phpmemcachedadmin.tar.gz http://phpmemcacheadmin.googlecode.com/files/phpMemcachedAdmin-1.2.2-r262.tar.gz
 tar -xf phpmemcachedadmin.tar.gz -C /usr/share/isodev/phpmemcachedadmin
 rm -r phpmemcachedadmin.tar.gz
+
+# Installing wp-cli
+echo "Installing wp-cli"
+wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+php wp-cli.phar --info
+chmod +x wp-cli.phar
+mv wp-cli.phar /usr/local/bin/wp
+
+chgrp www-data /vagrant
+chmod 2750 /vagrant
 
 chgrp www-data /vagrant
 chmod 2750 /vagrant
