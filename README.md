@@ -13,6 +13,7 @@ Password for the virtual machines `root` user is `vagrant`. Password for MySQL `
 * Beanstalk Console
 * Webgrind
 * And a page with phpinfo
+* wp-cli
 
 ## Installed packages
 * build-essential  
@@ -48,7 +49,7 @@ Password for the virtual machines `root` user is `vagrant`. Password for MySQL `
 * php5-sqlite
 * php5-mysql
 * php5-memcached
-* mysql-server
+* mariadb-server
 * redis-server
 * beanstalkd
 * g++
