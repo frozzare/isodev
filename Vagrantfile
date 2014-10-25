@@ -2,7 +2,7 @@
 # vi: set ft=ruby :
 
 # The hostname to use
-HOSTNAME = 'iso.dev'
+HOSTNAME = 'isodev'
 
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
 VAGRANTFILE_API_VERSION = '2'
@@ -60,12 +60,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Private network ip
   config.vm.network :private_network, ip: '192.168.66.6'
+  
+  # Forward Mariadb port
+  config.vm.network "forwarded_port", guest: 3306, host: 3306
 
   # Provision
   config.vm.provision :shell, :path => '.isodev/bootstrap.sh'
-
-  # Forward MySQL port
-  config.vm.forward_port 3306, 3306
 
   # Set synced folder
   config.vm.synced_folder '.', '/vagrant', :nfs => { :mount_options => ['dmode=777','fmode=777','vers=3', 'tcp', 'fsc'] }
