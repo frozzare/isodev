@@ -53,10 +53,10 @@ Password for the virtual machines `root` user is `vagrant`. Password for MySQL `
 * php5-sqlite
 * php5-mysql
 * php5-memcached
-* mysql-server
+* mariadb-server
 * redis-server
 * beanstalkd
 * g++
 * npm
 * nodejs
-* hhvm
+* wp-cli
