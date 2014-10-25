@@ -138,7 +138,7 @@ echo cd \/vagrant > /home/vagrant/.bashrc
 rm -rf /etc/motd
 
 # Install Isorock Dashboard
-echo "Installing Isorock Dashboard"
+echo "Installing Isodev Dashboard"
 mkdir -p /usr/share/isodev/
 cp /vagrant/.isodev/default_site/index.html /usr/share/isodev/
 
