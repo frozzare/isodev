@@ -16,6 +16,14 @@ server {
 	if (-d /vagrant/$http_host/web) {
 		set $root_path /vagrant/$http_host/web;
 	}
+	
+	if (-d /vagrant/web) {
+	  set $root_path /vagrant/web;
+	}
+	
+	if ($root_path = '') {
+	  set $root_path /vagrant;
+	}
 
 	root $root_path;
 
