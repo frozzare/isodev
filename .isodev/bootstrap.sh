@@ -98,6 +98,9 @@ pecl install xdebug
 echo "extension=xdebug.so" >> /etc/php5/fpm/php.ini
 echo "xdebug.profiler_enable = 0" >> /etc/php5/fpm/php.ini
 
+# Bind address Mariadb
+sed -i "s/bind-address.*/bind-address = 0.0.0.0/" /etc/mysql/my.cnf
+
 # Enable error reporting
 sed -i "s/error_reporting = .*/error_reporting = E_ALL/" /etc/php5/fpm/php.ini
 sed -i "s/display_errors = .*/display_errors = On/" /etc/php5/fpm/php.ini
@@ -135,7 +138,7 @@ echo cd \/vagrant > /home/vagrant/.bashrc
 rm -rf /etc/motd
 
 # Install Isorock Dashboard
-echo "Installing Isorock Dashboard"
+echo "Installing Isodev Dashboard"
 mkdir -p /usr/share/isodev/
 cp /vagrant/.isodev/default_site/index.html /usr/share/isodev/
 
@@ -179,7 +182,6 @@ rm -r phpmemcachedadmin.tar.gz
 # Installing wp-cli
 echo "Installing wp-cli"
 wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
-php wp-cli.phar --info
 chmod +x wp-cli.phar
 mv wp-cli.phar /usr/local/bin/wp
 
@@ -189,6 +191,7 @@ chmod 2750 /vagrant
 # Copying nginx files to nginx.
 cp -R /vagrant/.isodev/nginx/* /etc/nginx/sites-enabled
 
+service mysql restart
 service nginx restart
 service php5-fpm restart
 

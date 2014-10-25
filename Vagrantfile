@@ -62,7 +62,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.network :private_network, ip: '192.168.66.6'
   
   # Forward Mariadb port
-  config.vm.network "forwarded_port", guest: 3306, host: 3306
+  config.vm.network "forwarded_port", guest: 3306, host: 33060
 
   # Provision
   config.vm.provision :shell, :path => '.isodev/bootstrap.sh'
