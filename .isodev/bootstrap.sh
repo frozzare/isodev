@@ -3,6 +3,8 @@
 # Isodev bootstrap
 #
 
+webroot="/vagrant/web"
+
 # Upgrade Base Packages
 echo "Updating packages..."
 apt-get update -y
@@ -32,14 +34,14 @@ packages_to_install=(
   cachefilesd
 
   # Webserver
-  apache
+  apache2
 
   # Databases
   mariadb-server
   redis-server
 
   # PHP packages
-  php5-fpm
+  php5
   php5-cli
   php5-common
   php5-dev
@@ -98,14 +100,14 @@ sed -i "s/bind-address.*/bind-address = 0.0.0.0/" /etc/mysql/my.cnf
 
 # Install xdebug
 pecl install xdebug
-echo "extension=xdebug.so" >> /etc/php5/fpm/php.ini
-echo "xdebug.profiler_enable = 0" >> /etc/php5/fpm/php.ini
+echo "extension=xdebug.so" >> /etc/php5/php.ini
+echo "xdebug.profiler_enable = 0" >> /etc/php5/php.ini
 
 # Enable error reporting
-sed -i "s/error_reporting = .*/error_reporting = E_ALL/" /etc/php5/fpm/php.ini
-sed -i "s/display_errors = .*/display_errors = On/" /etc/php5/fpm/php.ini
-sed -i "s/error_reporting = .*/error_reporting = E_ALL/" /etc/php5/fpm/php.ini
-sed -i "s/display_errors = .*/display_errors = On/" /etc/php5/fpm/php.ini
+sed -i "s/error_reporting = .*/error_reporting = E_ALL/" /etc/php5/php.ini
+sed -i "s/display_errors = .*/display_errors = On/" /etc/php5/php.ini
+sed -i "s/error_reporting = .*/error_reporting = E_ALL/" /etc/php5/php.ini
+sed -i "s/display_errors = .*/display_errors = On/" /etc/php5/php.ini
 
 # Memory limit
 sed -i "s/memory_limit = .*/memory_limit = 512M/" /etc/php5/cli/php.ini
@@ -271,6 +273,7 @@ allothersites="<VirtualHost *:80>
 </VirtualHost>"
 echo "${allothersites}" >> /etc/apache2/sites-enabled/allothersites.conf
 service apache2 restart
+
 
 # Welcome message
 echo "  Welcome to Isodev!" >> /etc/motd
