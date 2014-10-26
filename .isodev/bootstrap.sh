@@ -162,10 +162,10 @@ service apache2 restart
 echo "Installing phpMyAdmin"
 mkdir /usr/share/phpmyadmin
 mkdir /etc/phpmyadmin
-wget -q -O phpmyadmin.tar.gz 'http://sourceforge.net/projects/phpmyadmin/files/phpMyAdmin/4.2.2/phpMyAdmin-4.2.2-all-languages.tar.gz/download'
+wget -q -O phpmyadmin.tar.gz 'http://sourceforge.net/projects/phpmyadmin/files/phpMyAdmin/4.2.10.1/phpMyAdmin-4.2.10.1-all-languages.tar.gz/download'
 tar -xf phpmyadmin.tar.gz
-mv phpMyAdmin-4.2.2-all-languages/* /usr/share/phpmyadmin/
-rm -r phpmyadmin.tar.gz phpMyAdmin-4.2.2-all-languages
+mv phpMyAdmin-4.2.10.1-all-languages/* /usr/share/phpmyadmin/
+rm -r phpmyadmin.tar.gz phpMyAdmin-4.2.10.1-all-languages
 phpmyadminalias="Alias /phpmyadmin /usr/share/phpmyadmin
 
 <Directory /usr/share/phpmyadmin>
@@ -274,6 +274,11 @@ allothersites="<VirtualHost *:80>
 echo "${allothersites}" >> /etc/apache2/sites-enabled/allothersites.conf
 service apache2 restart
 
+# Installing wp-cli
+echo "Installing wp-cli"
+wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+chmod +x wp-cli.phar
+mv wp-cli.phar /usr/local/bin/wp
 
 # Welcome message
 echo "  Welcome to Isodev!" >> /etc/motd
