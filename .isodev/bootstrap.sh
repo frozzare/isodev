@@ -57,6 +57,7 @@ packages_to_install=(
   php5-sqlite
   php5-mysqlnd
   php5-memcached
+  php5-redis
 
   # Queue
   beanstalkd
