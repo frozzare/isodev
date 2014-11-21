@@ -101,6 +101,10 @@ pecl install xdebug
 echo "extension=xdebug.so" >> /etc/php5/fpm/php.ini
 echo "xdebug.profiler_enable = 0" >> /etc/php5/fpm/php.ini
 
+# Disable apc
+echo "apc.enabled = 0" >> /etc/php5/fpm/php.ini
+echo "opcache.enabled = 0" >> /etc/php5/fpm/php.ini
+
 # Enable error reporting
 sed -i "s/error_reporting = .*/error_reporting = E_ALL/" /etc/php5/fpm/php.ini
 sed -i "s/display_errors = .*/display_errors = On/" /etc/php5/fpm/php.ini
