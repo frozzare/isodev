@@ -125,6 +125,9 @@ mv composer.phar /usr/local/bin/composer
 pear config-set auto_discover 1
 pear install pear.phpunit.de/phpunit
 
+# Enable mcrypt
+php5enmod mcrypt
+
 # Configure beanstalkd
 sed -i "s/#START=yes/START=yes/" /etc/default/beanstalkd
 /etc/init.d/beanstalkd start
