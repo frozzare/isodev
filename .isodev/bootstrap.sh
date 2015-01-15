@@ -122,8 +122,7 @@ curl -sS https://getcomposer.org/installer | php
 mv composer.phar /usr/local/bin/composer
 
 # Install PHPUnit
-pear config-set auto_discover 1
-pear install pear.phpunit.de/phpunit
+apt-get install phpunit
 
 # Enable mcrypt
 php5enmod mcrypt
