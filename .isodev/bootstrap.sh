@@ -63,10 +63,17 @@ packages_to_install=(
   g++
   npm
   nodejs
+  
+  # HHVM
+  hhvm
 
   # Locale
   language-pack-sv
 )
+
+# Adding HHVM source
+wget -O - http://dl.hhvm.com/conf/hhvm.gpg.key | apt-key add -
+echo deb http://dl.hhvm.com/ubuntu trusty main | tee /etc/apt/sources.list.d/hhvm.list
 
 # Add MariaDB source
 apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xcbcb082a1bb943db
@@ -74,8 +81,8 @@ echo "deb http://ftp.ddg.lth.se/mariadb/repo/10.0/ubuntu trusty main" >> /etc/ap
 echo "deb-src http://ftp.ddg.lth.se/mariadb/repo/10.0/ubuntu trusty main" >> /etc/apt/sources.list.d/mariadb.list
 apt-get update -y
 
-# Setup mysql. Sets database root password to root.
-echo "MySQL setup"
+# Setup MariaDB. Sets database root password to root.
+echo "MariaDB setup"
 echo mysql-server mysql-server/root_password password root | debconf-set-selections
 echo mysql-server mysql-server/root_password_again password root | debconf-set-selections
 
@@ -93,15 +100,18 @@ done
 # Clean apt-get cache
 apt-get clean
 
-# Bind address Mariadb
-sed -i "s/bind-address.*/bind-address = 0.0.0.0/" /etc/mysql/my.cnf
+# MariaDB
+update-rc.d mysql defaults
+rm -r /etc/mysql/my.cnf
+cp /vagrant/.isodev/confs/my.cnf /etc/mysql/my.cnf
+service mysql restart
 
 # Install xdebug
 pecl install xdebug
-echo "extension=xdebug.so" >> /etc/php5/fpm/php.ini
+echo "zend_extenstion=xdebug.so" >> /etc/php5/fpm/php.ini
 echo "xdebug.profiler_enable = 0" >> /etc/php5/fpm/php.ini
 
-# Disable apc
+# Disable cache
 echo "apc.enabled = 0" >> /etc/php5/fpm/php.ini
 echo "opcache.enabled = 0" >> /etc/php5/fpm/php.ini
 
@@ -122,7 +132,8 @@ curl -sS https://getcomposer.org/installer | php
 mv composer.phar /usr/local/bin/composer
 
 # Install PHPUnit
-apt-get install phpunit
+wget https://phar.phpunit.de/phpunit.phar
+mv phpunit.phar /usr/bin/phpunit
 
 # Enable mcrypt
 php5enmod mcrypt
@@ -136,7 +147,7 @@ echo "Linking /usr/bin/nodejs to /usr/bin/node"
 ln -s /usr/bin/nodejs /usr/bin/node
 
 # Setup cachefilesd
-sudo echo "RUN=yes" > /etc/default/cachefilesd
+echo "RUN=yes" > /etc/default/cachefilesd
 
 # Set start path
 cd /vagrant
@@ -156,10 +167,10 @@ echo "<?php phpinfo(); ?>" >> /usr/share/isodev/phpinfo/index.php
 # Install phpmyadmin
 echo "Installing phpMyAdmin"
 mkdir -p /usr/share/isodev/phpmyadmin
-wget -q -O phpmyadmin.tar.gz 'http://sourceforge.net/projects/phpmyadmin/files/phpMyAdmin/4.2.10.1/phpMyAdmin-4.2.10.1-all-languages.tar.gz/download'
+wget -q -O phpmyadmin.tar.gz 'http://sourceforge.net/projects/phpmyadmin/files/phpMyAdmin/4.3.6/phpMyAdmin-4.3.6-all-languages.tar.gz/download'
 tar -xf phpmyadmin.tar.gz
-mv phpMyAdmin-4.2.10.1-all-languages/* /usr/share/isodev/phpmyadmin
-rm -r phpMyAdmin-4.2.10.1-all-languages phpmyadmin.tar.gz
+mv phpMyAdmin-4.3.6-all-languages/* /usr/share/isodev/phpmyadmin
+rm -r phpMyAdmin-4.3.6-all-languages phpmyadmin.tar.gz
 
 # Install beanstalk console
 echo "Installing Beanstalk Console"
@@ -185,6 +196,12 @@ wget -q -O phpmemcachedadmin.tar.gz http://phpmemcacheadmin.googlecode.com/files
 tar -xf phpmemcachedadmin.tar.gz -C /usr/share/isodev/phpmemcachedadmin
 rm -r phpmemcachedadmin.tar.gz
 
+# Install Pimp My Log
+echo "Installing Pimp My Log"
+mkdir -p /usr/share/isodev/pimpmylog
+git clone https://github.com/potsky/PimpMyLog.git /usr/share/isodev/pimpmylog
+cp /vagrant/.isodev/confs/pimpmylog.config.user.php /usr/share/isodev/pimpmylog/config.user.php
+
 # Installing wp-cli
 echo "Installing wp-cli"
 wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
@@ -195,11 +212,21 @@ chgrp www-data /vagrant
 chmod 2750 /vagrant
 
 # Copying nginx files to nginx.
+rm -r /etc/nginx/sites-enabled/default
 cp -R /vagrant/.isodev/nginx/* /etc/nginx/sites-enabled
 
-service mysql restart
-service nginx restart
-service php5-fpm restart
+# HHVM
+update-rc.d hhvm defaults
+/usr/share/hhvm/install_fastcgi.sh
+sed -i "s/hhvm.server.port = .*/hhvm.server.port = 8000/" /etc/hhvm/php.ini
+echo "hhvm.log.header = true" >> /etc/hhvm/php.ini
+echo "hhvm.log.natives_stack_trace = true" >> /etc/hhvm/php.ini
+sed -i "s/fastcgi_pass .*/fastcgi_pass 127.0.0.1:9000/" /etc/hhvm/php.ini
+
+# Restart the services
+service hhvm restart
+php5-fpm -t && service php5-fpm restart
+nginx -t && service nginx restart
 
 # Welcome message
 echo "  Welcome to Isodev!" >> /etc/motd
