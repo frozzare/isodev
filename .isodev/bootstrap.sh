@@ -3,7 +3,7 @@
 # Isodev bootstrap
 #
 
-webroot="/vagrant/web"
+webroot="/vagrant/www"
 
 # Upgrade Base Packages
 echo "Updating packages..."
@@ -101,7 +101,7 @@ sed -i "s/bind-address.*/bind-address = 0.0.0.0/" /etc/mysql/my.cnf
 
 # Install xdebug
 pecl install xdebug
-echo "extension=xdebug.so" >> /etc/php5/php.ini
+echo "zend_extenstion=xdebug.so" >> /etc/php5/php.ini
 echo "xdebug.profiler_enable = 0" >> /etc/php5/php.ini
 
 # Enable error reporting
@@ -121,8 +121,8 @@ curl -sS https://getcomposer.org/installer | php
 mv composer.phar /usr/local/bin/composer
 
 # Install PHPUnit
-pear config-set auto_discover 1
-pear install pear.phpunit.de/phpunit
+wget https://phar.phpunit.de/phpunit.phar
+mv phpunit.phar /usr/bin/phpunit
 
 # Configure beanstalkd
 sed -i "s/#START=yes/START=yes/" /etc/default/beanstalkd
@@ -133,7 +133,7 @@ echo "Linking /usr/bin/nodejs to /usr/bin/node"
 ln -s /usr/bin/nodejs /usr/bin/node
 
 # Setup cachefilesd
-sudo echo "RUN=yes" > /etc/default/cachefilesd
+echo "RUN=yes" > /etc/default/cachefilesd
 
 # Set start path
 cd /vagrant
@@ -161,41 +161,36 @@ service apache2 restart
 
 # Install phpmyadmin
 echo "Installing phpMyAdmin"
-mkdir /usr/share/phpmyadmin
-mkdir /etc/phpmyadmin
-wget -q -O phpmyadmin.tar.gz 'http://sourceforge.net/projects/phpmyadmin/files/phpMyAdmin/4.2.10.1/phpMyAdmin-4.2.10.1-all-languages.tar.gz/download'
+mkdir -p /usr/share/phpmyadmin/
+wget -q -O phpmyadmin.tar.gz 'http://sourceforge.net/projects/phpmyadmin/files/phpMyAdmin/4.3.6/phpMyAdmin-4.3.6-all-languages.tar.gz/download'
 tar -xf phpmyadmin.tar.gz
-mv phpMyAdmin-4.2.10.1-all-languages/* /usr/share/phpmyadmin/
-rm -r phpmyadmin.tar.gz phpMyAdmin-4.2.10.1-all-languages
+mv phpMyAdmin-4.3.6-all-languages/* /usr/share/phpmyadmin/
+rm -r phpMyAdmin-4.3.6-all-languages phpmyadmin.tar.gz
 phpmyadminalias="Alias /phpmyadmin /usr/share/phpmyadmin
 
 <Directory /usr/share/phpmyadmin>
   Options Indexes FollowSymLinks
   DirectoryIndex index.php
 </Directory>"
-echo "${phpmyadminalias}" >> /etc/phpmyadmin/apache2.conf
-ln -s /etc/phpmyadmin/apache2.conf /etc/apache2/conf-enabled/phpmyadmin.conf
+echo "${phpmyadminalias}" >> /etc/apache2/conf-enabled/phpmyadmin.conf
 service apache2 restart
 
 # Install beanstalk console
 echo "Installing Beanstalk Console"
 git clone https://github.com/ptrofimov/beanstalk_console.git /usr/share/phpbeanstalk_console
-mkdir /etc/phpbeanstalk_console
 beanstalk_consolealias="Alias /beanstalk-console /usr/share/phpbeanstalk_console/public
 
 <Directory /usr/share/phpbeanstalk_console/public>
   Options Indexes FollowSymLinks
   DirectoryIndex index.php
 </Directory>"
-echo "${beanstalk_consolealias}" >> /etc/phpbeanstalk_console/apache2.conf
-ln -s /etc/phpbeanstalk_console/apache2.conf /etc/apache2/conf-enabled/beanstalk_console.conf
+echo "${beanstalk_consolealias}" >> /etc/apache2/conf-enabled/beanstalk_console.conf
 chmod u+w /usr/share/phpbeanstalk_console/storage.json
 chown www-data:www-data /usr/share/phpbeanstalk_console/storage.json
 service apache2 restart
 
 # Install webgrid
 echo "Installing Webgrind"
-mkdir /etc/phpwebgrind
 git clone https://github.com/jokkedk/webgrind.git /usr/share/phpwebgrind/
 phpwebgrindalias="Alias /webgrind /usr/share/phpwebgrind
 
@@ -203,13 +198,11 @@ phpwebgrindalias="Alias /webgrind /usr/share/phpwebgrind
   Options Indexes FollowSymLinks
   DirectoryIndex index.php
 </Directory>"
-echo "${phpwebgrindalias}" >> /etc/phpwebgrind/apache2.conf
-ln -s /etc/phpwebgrind/apache2.conf /etc/apache2/conf-enabled/phpwebgrind.conf
+echo "${phpwebgrindalias}" >> /etc/apache2/conf-enabled/phpwebgrind.conf
 service apache2 restart
 
 # Install opcache-status
 echo "Installing Opcache Status"
-mkdir /etc/phpopcache-status
 git clone https://github.com/rlerdorf/opcache-status.git /usr/share/phpopcache-status/
 phpwebgrindalias="Alias /opcache-status /usr/share/phpopcache-status
 
@@ -217,14 +210,12 @@ phpwebgrindalias="Alias /opcache-status /usr/share/phpopcache-status
   Options Indexes FollowSymLinks
   DirectoryIndex index.php
 </Directory>"
-echo "${phpwebgrindalias}" >> /etc/phpopcache-status/apache2.conf
-ln -s /etc/phpopcache-status/apache2.conf /etc/apache2/conf-enabled/phpopcache-status.conf
+echo "${phpwebgrindalias}" >> /etc/apache2/conf-enabled/phpopcache-status.conf
 service apache2 restart
 
 # Install phpmemcachedadmin
 echo "Installing phpMemcachedAdmin"
 mkdir /usr/share/phpmemcachedadmin
-mkdir /etc/phpmemcachedadmin
 wget -q -O phpmemcachedadmin.tar.gz http://phpmemcacheadmin.googlecode.com/files/phpMemcachedAdmin-1.2.2-r262.tar.gz
 tar -xf phpmemcachedadmin.tar.gz -C /usr/share/phpmemcachedadmin
 rm -r phpmemcachedadmin.tar.gz
@@ -234,8 +225,20 @@ phpmemcachedadminalias="Alias /phpmemcachedadmin /usr/share/phpmemcachedadmin
   Options Indexes FollowSymLinks
   DirectoryIndex index.php
 </Directory>"
-echo "${phpmemcachedadminalias}" >> /etc/phpmemcachedadmin/apache2.conf
-ln -s /etc/phpmemcachedadmin/apache2.conf /etc/apache2/conf-enabled/phpmemcachedadmin.conf
+echo "${phpmemcachedadminalias}" >> /etc/apache2/conf-enabled/phpmemcachedadmin.conf
+service apache2 restart
+
+# Install Pimp My Log
+echo "Installing Pimp My Log"
+git clone https://github.com/potsky/PimpMyLog.git /usr/share/pimpmylog
+cp /vagrant/.isodev/confs/pimpmylog.config.user.php /usr/share/pimpmylog/config.user.php
+pimpmylogalias="Alias /pimpmylog /usr/share/pimpmylog
+
+<Directory /usr/share/pimpmylog>
+  Options Indexes FollowSymLinks
+  DirectoryIndex index.php
+</Directory>"
+echo "${pimpmylogalias}" >> /etc/apache2/conf-enabled/pimpmylog.conf
 service apache2 restart
 
 # Install Isodev Dashboard
