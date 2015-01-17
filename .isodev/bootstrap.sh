@@ -3,7 +3,7 @@
 # Isodev bootstrap
 #
 
-webroot="/vagrant/www"
+webroot="/vagrant/web"
 
 # Upgrade Base Packages
 echo "Updating packages..."
@@ -157,7 +157,6 @@ phpinfoalias="Alias /phpinfo /usr/share/phpinfo
 echo "<?php phpinfo(); ?>" >> /usr/share/phpinfo/index.php
 echo "${phpinfoalias}" >> /etc/phpinfo/apache2.conf
 ln -s /etc/phpinfo/apache2.conf /etc/apache2/conf-enabled/phpinfo.conf
-service apache2 restart
 
 # Install phpmyadmin
 echo "Installing phpMyAdmin"
@@ -173,7 +172,6 @@ phpmyadminalias="Alias /phpmyadmin /usr/share/phpmyadmin
   DirectoryIndex index.php
 </Directory>"
 echo "${phpmyadminalias}" >> /etc/apache2/conf-enabled/phpmyadmin.conf
-service apache2 restart
 
 # Install beanstalk console
 echo "Installing Beanstalk Console"
@@ -187,7 +185,6 @@ beanstalk_consolealias="Alias /beanstalk-console /usr/share/phpbeanstalk_console
 echo "${beanstalk_consolealias}" >> /etc/apache2/conf-enabled/beanstalk_console.conf
 chmod u+w /usr/share/phpbeanstalk_console/storage.json
 chown www-data:www-data /usr/share/phpbeanstalk_console/storage.json
-service apache2 restart
 
 # Install webgrid
 echo "Installing Webgrind"
@@ -199,7 +196,6 @@ phpwebgrindalias="Alias /webgrind /usr/share/phpwebgrind
   DirectoryIndex index.php
 </Directory>"
 echo "${phpwebgrindalias}" >> /etc/apache2/conf-enabled/phpwebgrind.conf
-service apache2 restart
 
 # Install opcache-status
 echo "Installing Opcache Status"
@@ -211,7 +207,6 @@ phpwebgrindalias="Alias /opcache-status /usr/share/phpopcache-status
   DirectoryIndex index.php
 </Directory>"
 echo "${phpwebgrindalias}" >> /etc/apache2/conf-enabled/phpopcache-status.conf
-service apache2 restart
 
 # Install phpmemcachedadmin
 echo "Installing phpMemcachedAdmin"
@@ -226,7 +221,12 @@ phpmemcachedadminalias="Alias /phpmemcachedadmin /usr/share/phpmemcachedadmin
   DirectoryIndex index.php
 </Directory>"
 echo "${phpmemcachedadminalias}" >> /etc/apache2/conf-enabled/phpmemcachedadmin.conf
-service apache2 restart
+
+# Permission fixes for Pimp my log
+sed -i 's/create 640 root adm/create 640 root www-data/g' /etc/logrotate.d/apache2
+chmod 644 /var/log/apache2/access.log /var/log/apache2/error.log
+chown root:www-data /var/log/apache2
+chown root:www-data /var/log/apache2/*
 
 # Install Pimp My Log
 echo "Installing Pimp My Log"
@@ -239,7 +239,6 @@ pimpmylogalias="Alias /pimpmylog /usr/share/pimpmylog
   DirectoryIndex index.php
 </Directory>"
 echo "${pimpmylogalias}" >> /etc/apache2/conf-enabled/pimpmylog.conf
-service apache2 restart
 
 # Install Isodev Dashboard
 echo "Installing Isodev Dashboard"
@@ -257,7 +256,6 @@ isodevdashboardsite="<VirtualHost *:80>
 </VirtualHost>"
 echo "${isodevdashboardsite}" >> /etc/apache2/sites-enabled/isodevdashboard.conf
 rm -r /etc/apache2/sites-enabled/000-default.conf
-service apache2 restart
 
 # Installing other sites
 rm -r /var/www
