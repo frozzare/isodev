@@ -19,6 +19,7 @@ Password for the virtual machines `root` user is `vagrant`. Password for MySQL `
 * Webgrind
 * And a page with phpinfo
 * wp-cli
+* Pimp My Log
 
 ## Installed packages
 * build-essential  
