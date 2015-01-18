@@ -134,6 +134,7 @@ mv composer.phar /usr/local/bin/composer
 # Install PHPUnit
 wget https://phar.phpunit.de/phpunit.phar
 mv phpunit.phar /usr/bin/phpunit
+chmod +x /usr/bin/phpunit
 
 # Enable mcrypt
 php5enmod mcrypt
