@@ -123,6 +123,7 @@ mv composer.phar /usr/local/bin/composer
 # Install PHPUnit
 wget https://phar.phpunit.de/phpunit.phar
 mv phpunit.phar /usr/bin/phpunit
+chmod +x /usr/bin/phpunit
 
 # Configure beanstalkd
 sed -i "s/#START=yes/START=yes/" /etc/default/beanstalkd
