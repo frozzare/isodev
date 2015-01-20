@@ -3,8 +3,6 @@
 # Isodev bootstrap
 #
 
-MAILHOG_BINARY="https://github.com/mailhog/MailHog/releases/download/v0.1.0/MailHog_linux_amd64"
-
 # Upgrade Base Packages
 echo "Updating packages..."
 apt-get update -y
