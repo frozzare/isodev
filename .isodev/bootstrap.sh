@@ -103,6 +103,7 @@ cd daemonize
 make
 make install
 cd
+ln -s /usr/local/sbin/daemonize /usr/bin/
 
 # MailHog
 echo "Install MailHog"
