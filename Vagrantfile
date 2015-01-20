@@ -68,5 +68,5 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision :shell, :path => '.isodev/bootstrap.sh'
 
   # Set synced folder
-  config.vm.synced_folder '.', '/vagrant', :nfs => { :mount_options => ['dmode=777','fmode=777','vers=3', 'tcp', 'fsc'] }
+  config.vm.synced_folder '.', '/vagrant', :type "nfs", mount_options: ['rw', 'vers=3', 'tcp', 'fsc' ,'actimeo=2']
 end
