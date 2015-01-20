@@ -31,6 +31,7 @@ packages_to_install=(
   dos2unix
   libmcrypt4
   htop
+  cachefilesd
 
   # Webserver
   apache2
@@ -95,8 +96,39 @@ done
 # Clean apt-get cache
 apt-get clean
 
-# Bind address Mariadb
-sed -i "s/bind-address.*/bind-address = 0.0.0.0/" /etc/mysql/my.cnf
+# Install daemonize
+git clone http://github.com/bmc/daemonize.git
+cd daemonize
+./configure
+make
+make install
+cd
+ln -s /usr/local/sbin/daemonize /usr/bin/
+
+# MailHog
+echo "Install MailHog"
+mkdir -p /opt/mailhog
+wget -O mailhog -P /opt/mailhog/ https://github.com/mailhog/MailHog/releases/download/v0.1.0/MailHog_linux_amd64
+mv mailhog /opt/mailhog
+chmod +x /opt/mailhog/mailhog
+cp /vagrant/.isodev/confs/mailhog /etc/init.d/mailhog
+chmod +x /etc/init.d/mailhog
+update-rc.d mailhog defaults
+/etc/init.d/mailhog start
+
+# sSMTP
+echo "Configure sSMTP"
+rm -r /etc/ssmtp/ssmtp.conf
+cp /vagrant/.isodev/confs/ssmtp.conf /etc/ssmtp/
+
+# Change php sendmail path
+sed -i "s/;sendmail_path = */sendmail_path = /usr/sbin/ssmtp -t" /etc/php5/fpm/php.ini
+
+# MariaDB
+update-rc.d mysql defaults
+rm -r /etc/mysql/my.cnf
+cp /vagrant/.isodev/confs/my.cnf /etc/mysql/my.cnf
+service mysql restart
 
 # Install xdebug
 pecl install xdebug
@@ -116,6 +148,7 @@ sed -i "s/memory_limit = .*/memory_limit = 512M/" /etc/php5/apache2/php.ini
 sed -i "s/;realpath_cache_size = */realpath_cache_size = 1024K/" /etc/php5/cli/php.ini
 
 # Date timezone.
+sed -i "s/;date.timezone.*/date.timezone = UTC/" /etc/php5/apache2/php.ini
 sed -i "s/;date.timezone.*/date.timezone = UTC/" /etc/php5/cli/php.ini
 
 # Install composer

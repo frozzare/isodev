@@ -64,10 +64,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   
   # Forward Mariadb port
   config.vm.network "forwarded_port", guest: 3306, host: 33060
+  
+  # Forward Mailhog port
+  config.vm.network "forwarded_port", guest: 8025, host: 8025
 
   # Provision
   config.vm.provision :shell, :path => '.isodev/bootstrap.sh'
 
   # Set synced folder
-  config.vm.synced_folder '.', '/vagrant', id: 'vagrant-root', :nfs => true
+  config.vm.synced_folder '.', '/vagrant', type: "nfs", mount_options: ['rw', 'vers=3', 'tcp', 'fsc' ,'actimeo=2']
 end
