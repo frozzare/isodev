@@ -31,6 +31,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     v.customize ["modifyvm", :id, "--cpus", cpus]    
     v.customize ['modifyvm', :id, '--natdnshostresolver1', 'on']
     v.customize ['modifyvm', :id, '--natdnsproxy1', 'on']
+    v.customize ['modifyvm', :id, '--ioapic', 'on']
   end
 
   # Forward ssh agent
@@ -68,5 +69,5 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision :shell, :path => '.isodev/bootstrap.sh'
 
   # Set synced folder
-  config.vm.synced_folder '.', '/vagrant', :nfs => { :mount_options => ['dmode=777','fmode=777','vers=3', 'tcp', 'fsc'] }
+  config.vm.synced_folder '.', '/vagrant', id: 'vagrant-root', :nfs => true
 end

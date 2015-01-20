@@ -31,7 +31,6 @@ packages_to_install=(
   dos2unix
   libmcrypt4
   htop
-  cachefilesd
 
   # Webserver
   apache2
@@ -101,17 +100,20 @@ sed -i "s/bind-address.*/bind-address = 0.0.0.0/" /etc/mysql/my.cnf
 
 # Install xdebug
 pecl install xdebug
-echo "zend_extenstion=xdebug.so" >> /etc/php5/php.ini
-echo "xdebug.profiler_enable = 0" >> /etc/php5/php.ini
+echo "xdebug.profiler_enable = 0" >> /etc/php5/apache2/php.ini
+echo "xdebug.coverage_enable = 0" >> /etc/php5/apache2/php.ini
+echo "xdebug.remote_autostart = 0" >> /etc/php5/apache2/php.ini
+echo "xdebug.remote_enable = 0" >> /etc/php5/apache2/php.ini
+echo "opcache.enable = 0" >> /etc/php5/apache2/php.ini
+echo "apc.enabled = 0" >> /etc/php5/apache2/php.ini
 
 # Enable error reporting
-sed -i "s/error_reporting = .*/error_reporting = E_ALL/" /etc/php5/php.ini
-sed -i "s/display_errors = .*/display_errors = On/" /etc/php5/php.ini
-sed -i "s/error_reporting = .*/error_reporting = E_ALL/" /etc/php5/php.ini
-sed -i "s/display_errors = .*/display_errors = On/" /etc/php5/php.ini
+sed -i "s/error_reporting = .*/error_reporting = E_ALL/" /etc/php5/apache2/php.ini
+sed -i "s/display_errors = .*/display_errors = On/" /etc/php5/apache2/php.ini
 
 # Memory limit
-sed -i "s/memory_limit = .*/memory_limit = 512M/" /etc/php5/cli/php.ini
+sed -i "s/memory_limit = .*/memory_limit = 512M/" /etc/php5/apache2/php.ini
+sed -i "s/;realpath_cache_size = */realpath_cache_size = 1024K/" /etc/php5/cli/php.ini
 
 # Date timezone.
 sed -i "s/;date.timezone.*/date.timezone = UTC/" /etc/php5/cli/php.ini
@@ -132,9 +134,6 @@ sed -i "s/#START=yes/START=yes/" /etc/default/beanstalkd
 # Link nodejs to node
 echo "Linking /usr/bin/nodejs to /usr/bin/node"
 ln -s /usr/bin/nodejs /usr/bin/node
-
-# Setup cachefilesd
-echo "RUN=yes" > /etc/default/cachefilesd
 
 # Set start path
 cd /vagrant
