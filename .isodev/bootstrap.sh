@@ -108,23 +108,25 @@ service mysql restart
 
 # Install xdebug
 pecl install xdebug
-echo "zend_extenstion=xdebug.so" >> /etc/php5/fpm/php.ini
 echo "xdebug.profiler_enable = 0" >> /etc/php5/fpm/php.ini
+echo "xdebug.coverage_enable = 0" >> /etc/php5/fpm/php.ini
+echo "xdebug.remote_autostart = 0" >> /etc/php5/fpm/php.ini
+echo "xdebug.remote_enable = 0" >> /etc/php5/fpm/php.ini
 
-# Disable cache
+# Opache and APC
+echo "opcache.enable = 0" >> /etc/php5/fpm/php.ini
 echo "apc.enabled = 0" >> /etc/php5/fpm/php.ini
-echo "opcache.enabled = 0" >> /etc/php5/fpm/php.ini
 
 # Enable error reporting
 sed -i "s/error_reporting = .*/error_reporting = E_ALL/" /etc/php5/fpm/php.ini
 sed -i "s/display_errors = .*/display_errors = On/" /etc/php5/fpm/php.ini
-sed -i "s/error_reporting = .*/error_reporting = E_ALL/" /etc/php5/fpm/php.ini
-sed -i "s/display_errors = .*/display_errors = On/" /etc/php5/fpm/php.ini
 
 # Memory limit
-sed -i "s/memory_limit = .*/memory_limit = 512M/" /etc/php5/cli/php.ini
+sed -i "s/memory_limit = .*/memory_limit = 512M/" /etc/php5/fpm/php.ini
+sed -i "s/;realpath_cache_size = */realpath_cache_size = 1024K/" /etc/php5/cli/php.ini
 
 # Date timezone.
+sed -i "s/;date.timezone.*/date.timezone = UTC/" /etc/php5/fpm/php.ini
 sed -i "s/;date.timezone.*/date.timezone = UTC/" /etc/php5/cli/php.ini
 
 # Install composer
