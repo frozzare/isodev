@@ -47,6 +47,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   
   # Forward Mariadb port
   config.vm.network "forwarded_port", guest: 3306, host: 33060
+  
+  # Forward Mailhog port
+  config.vm.network "forwarded_port", guest: 8025, host: 8025
 
   # Add custom hosts
   if defined? VagrantPlugins::HostsUpdater

@@ -3,6 +3,8 @@
 # Isodev bootstrap
 #
 
+MAILHOG_BINARY="https://github.com/mailhog/MailHog/releases/download/v0.1.0/MailHog_linux_amd64"
+
 # Upgrade Base Packages
 echo "Updating packages..."
 apt-get update -y
@@ -22,7 +24,7 @@ packages_to_install=(
   curl
   make
   colordiff
-  postfix
+  ssmtp
   gettext
   graphviz
   memcached
@@ -87,11 +89,6 @@ echo "MariaDB setup"
 echo mysql-server mysql-server/root_password password root | debconf-set-selections
 echo mysql-server mysql-server/root_password_again password root | debconf-set-selections
 
-# Setup postfix.
-echo "Postfix setup"
-echo postfix postfix/main_mailer_type select Internet Site | debconf-set-selections
-echo postfix postfix/mailname string isodev | debconf-set-selections
-
 # Install all packages in our packages to install list.
 echo "Installing apt-get packages..."
 for pkg in "${packages_to_install[@]}"; do
@@ -100,6 +97,33 @@ done
 
 # Clean apt-get cache
 apt-get clean
+
+# Install daemonize
+git clone http://github.com/bmc/daemonize.git
+cd daemonize
+./configure
+make
+make install
+cd
+
+# MailHog
+echo "Install MailHog"
+mkdir -p /opt/mailhog
+wget -O mailhog -P /opt/mailhog/ https://github.com/mailhog/MailHog/releases/download/v0.1.0/MailHog_linux_amd64
+mv mailhog /opt/mailhog
+chmod +x /opt/mailhog/mailhog
+cp /vagrant/.isodev/confs/mailhog /etc/init.d/mailhog
+chmod +x /etc/init.d/mailhog
+update-rc.d mailhog defaults
+/etc/init.d/mailhog start
+
+# sSMTP
+echo "Configure sSMTP"
+rm -r /etc/ssmtp/ssmtp.conf
+cp /vagrant/.isodev/confs/ssmtp.conf /etc/ssmtp/
+
+# Change php sendmail path
+sed -i "s/;sendmail_path = */sendmail_path = /usr/sbin/ssmtp -t" /etc/php5/fpm/php.ini
 
 # MariaDB
 update-rc.d mysql defaults
