@@ -20,7 +20,7 @@ Password for the virtual machines `root` user is `vagrant`. Password for MySQL `
 * And a page with phpinfo
 * wp-cli
 * Pimp My Log
-* Mailhog (http port 8025)
+* MailHog (http port 8025)
 
 ## Installed packages
 * build-essential  
