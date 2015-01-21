@@ -122,7 +122,7 @@ rm -r /etc/ssmtp/ssmtp.conf
 cp /vagrant/.isodev/confs/ssmtp.conf /etc/ssmtp/
 
 # Change php sendmail path
-sed -i "s/;sendmail_path = */sendmail_path = /usr/sbin/ssmtp -t" /etc/php5/fpm/php.ini
+sed -i "s/;sendmail_path.*/sendmail_path = \/usr\/sbin\/ssmtp -t/" /etc/php5/fpm/php.ini
 
 # MariaDB
 update-rc.d mysql defaults
@@ -147,7 +147,7 @@ sed -i "s/display_errors = .*/display_errors = On/" /etc/php5/fpm/php.ini
 
 # Memory limit
 sed -i "s/memory_limit = .*/memory_limit = 512M/" /etc/php5/fpm/php.ini
-sed -i "s/;realpath_cache_size = */realpath_cache_size = 1024K/" /etc/php5/cli/php.ini
+sed -i "s/;realpath_cache_size.*/realpath_cache_size = 1024K/" /etc/php5/fpm/php.ini
 
 # Date timezone.
 sed -i "s/;date.timezone.*/date.timezone = UTC/" /etc/php5/fpm/php.ini
