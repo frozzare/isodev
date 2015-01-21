@@ -1,5 +1,5 @@
 # Isodev
-Vagrant machine for PHP development. The operating system is Ubuntu 14.04. A custom dashboard is available at [http://iso.dev](http://iso.dev) with all tools and all other domains will go to web directory.
+Vagrant machine for PHP development. The operating system is Ubuntu 14.04. A custom dashboard is available at [http://iso.dev](http://iso.dev) with all tools and all other domains will go to `www` directory.
 
 ![Isodev Dashboard](http://public.forsmo.me/github/isodev.png)
 
@@ -15,6 +15,7 @@ Password for the virtual machines `root` user is `vagrant`. Password for MySQL `
 * And a page with phpinfo
 * wp-cli
 * Pimp My Log
+* MailHog (http port 8025)
 
 ## Installed packages
 * build-essential  
@@ -57,3 +58,4 @@ Password for the virtual machines `root` user is `vagrant`. Password for MySQL `
 * g++
 * npm
 * nodejs
+* cachefilesd
