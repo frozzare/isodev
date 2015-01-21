@@ -3,7 +3,7 @@
 # Isodev bootstrap
 #
 
-webroot="/vagrant/web"
+webroot="/vagrant/www"
 
 # Upgrade Base Packages
 echo "Updating packages..."
