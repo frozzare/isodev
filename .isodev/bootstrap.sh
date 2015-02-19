@@ -31,7 +31,6 @@ packages_to_install=(
   dos2unix
   libmcrypt4
   htop
-  cachefilesd
 
   # Webserver
   apache2

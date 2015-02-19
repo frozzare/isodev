@@ -1,47 +1,68 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-# The hostname to use
-HOSTNAME = 'isodev'
+require 'fileutils'
 
-# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
-VAGRANTFILE_API_VERSION = '2'
+Vagrant.require_version ">= 1.6.0"
 
-Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+CONFIG = File.join(File.dirname(__FILE__), "config.rb")
+
+# Default config
+$hostname = "isodev"
+$vm_memory = 1024
+$vm_cpus = 1
+$share_home = false
+$shared_folders = {}
+
+if File.exist?(CONFIG)
+  require CONFIG
+end
+
+Vagrant.configure("2") do |config|
+  # always use Vagrants insecure key
+  config.ssh.insert_key = false
+
+  # Set the box were using
+  config.vm.box = 'ubuntu/trusty64'
 
   # Virtualbox configuration
   config.vm.provider :virtualbox do |v|
-    host = RbConfig::CONFIG['host_os']
+    v.check_guest_additions = false
+    v.functional_vboxsf     = false
+    v.gui                   = $vm_gui
+    v.memory                = $vm_memory
+    v.cpus                  = $vm_cpus
+    v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+    v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+  end
 
-    # Give VM 1/4 system memory & access to all cpu cores on the host
-    if host =~ /darwin/
-      cpus = `sysctl -n hw.ncpu`.to_i
-      # sysctl returns Bytes and we need to convert to MB
-      mem = `sysctl -n hw.memsize`.to_i / 1024 / 1024 / 4
-    elsif host =~ /linux/
-      cpus = `nproc`.to_i
-      # meminfo shows KB and we need to convert to MB
-      mem = `grep 'MemTotal' /proc/meminfo | sed -e 's/MemTotal://' -e 's/ kB//'`.to_i / 1024 / 4
-    else # sorry Windows folks
-      cpus = 2
-      mem = 1024
-    end
+  # Parallels configuration
+  config.vm.provider "parallels" do |v, override|
+    override.vm.box = "parallels/ubuntu-14.04"
+    v.check_guest_tools = false
+    v.memory            = $vm_memory
+    v.cpus              = $vm_cpus
+  end
 
-    v.customize ["modifyvm", :id, "--memory", mem]
-    v.customize ["modifyvm", :id, "--cpus", cpus]    
-    v.customize ['modifyvm', :id, '--natdnshostresolver1', 'on']
-    v.customize ['modifyvm', :id, '--natdnsproxy1', 'on']
-    v.customize ['modifyvm', :id, '--ioapic', 'on']
+  # plugin conflict
+  if Vagrant.has_plugin?("vagrant-vbguest") then
+    config.vbguest.auto_update = false
   end
 
   # Forward ssh agent
   config.ssh.forward_agent = true
 
-  # Set the box were using
-  config.vm.box = 'ubuntu/trusty64'
-
   # Set hostname
-  config.vm.hostname = HOSTNAME
+  config.vm.hostname = $hostname
+
+  # Private network ip
+  config.vm.network :private_network, ip: "10.37.129.3"
+
+  # Forward Mariadb port
+  config.vm.network "forwarded_port", guest: 3306, host: 33060
+
+  # Forward Mailhog port
+  config.vm.network "forwarded_port", guest: 8025, host: 8025
 
   # Add custom hosts
   if defined? VagrantPlugins::HostsUpdater
@@ -59,18 +80,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.hostsupdater.aliases = hosts
   end
 
-  # Private network ip
-  config.vm.network :private_network, ip: '192.168.66.6'
-  
-  # Forward Mariadb port
-  config.vm.network "forwarded_port", guest: 3306, host: 33060
-  
-  # Forward Mailhog port
-  config.vm.network "forwarded_port", guest: 8025, host: 8025
-
   # Provision
   config.vm.provision :shell, :path => '.isodev/bootstrap.sh'
 
   # Set synced folder
-  config.vm.synced_folder '.', '/vagrant', type: "nfs", mount_options: ['rw', 'vers=3', 'tcp', 'fsc' ,'actimeo=2']
+  $shared_folders.each_with_index do |(host_folder, guest_folder), index|
+    config.vm.synced_folder host_folder.to_s, guest_folder.to_s, id: "isodev-share%02d" % index, nfs: true, mount_options: ['nolock,vers=3,udp']
+  end
 end
