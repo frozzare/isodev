@@ -39,9 +39,10 @@ Vagrant.configure("2") do |config|
   # Parallels configuration
   config.vm.provider "parallels" do |v, override|
     override.vm.box = "parallels/ubuntu-14.04"
-    v.check_guest_tools = false
-    v.memory            = $vm_memory
-    v.cpus              = $vm_cpus
+    v.check_guest_tools          = true
+    v.optimize_power_consumption = false
+    v.memory                     = $vm_memory
+    v.cpus                       = $vm_cpus
   end
 
   # plugin conflict
