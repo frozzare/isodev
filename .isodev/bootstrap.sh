@@ -29,7 +29,9 @@ packages_to_install=(
   dos2unix
   libmcrypt4
   htop
-  cachefilesd
+  bison
+  mercurial
+  binutils
 
   # Webserver
   nginx
@@ -172,9 +174,6 @@ sed -i "s/#START=yes/START=yes/" /etc/default/beanstalkd
 # Link nodejs to node
 echo "Linking /usr/bin/nodejs to /usr/bin/node"
 ln -s /usr/bin/nodejs /usr/bin/node
-
-# Setup cachefilesd
-echo "RUN=yes" > /etc/default/cachefilesd
 
 # Set start path
 cd /vagrant
