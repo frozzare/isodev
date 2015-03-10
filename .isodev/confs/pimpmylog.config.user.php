@@ -137,6 +137,32 @@
 					"CMD": ["\/OPTIONS\/"]
 				}
 			}
-		}
+		},
+		"hhvm1": {
+			"display" : "HHVM Error #3",
+		    "path"    : "\/var\/log\/hhvm\/error.log",
+		    "refresh" : 5,
+		    "max"     : 10,
+		    "notify"  : true,
+		    "format"    : {
+		    	"type"         : "HHVM",
+		        "regex"        : "@^\\[(.*) (.*) (.*) (.*):(.*):(.*)( (.*))*\\] (((.*) in (.*) on line (.*))|(.*))$@U",
+		        "export_title" : "Error",
+		        "match"        : {
+		        	"Date"     : [ 1, " ", 2 , " " , 3, " " , 4 , ":" , 5 , ":" , 6, " ", 7 ],
+		            "Error"    : 11,
+		            "File"     : 12,
+		            "Line"     : 13
+		        },
+		        "types"    : {
+		            "File"     : "pre:\/-69",
+		            "Line"     : "numeral",
+		            "Error"    : "pre"
+		        },
+		        "exclude": {
+		        	"URL": ["\/favicon.ico\/"]
+		        }
+		    }
+		 }
 	}
 }
