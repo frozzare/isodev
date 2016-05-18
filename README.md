@@ -58,7 +58,7 @@ Password for the virtual machines `root` user is `vagrant`. Password for MySQL `
 * mariadb-server
 * redis-server
 * beanstalkd
-* g++
+* g++
 * npm
 * nodejs
 * cachefilesd
